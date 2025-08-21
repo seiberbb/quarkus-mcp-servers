@@ -9,6 +9,10 @@
       "script-ref": "jdbc/.scripts/mcpjdbc.java",
       "java": "17+"
     },
+    "jdbcnodriver": {
+      "script-ref": "jdbc/.scripts/mcpservernodriver.java",
+      "java": "17+"
+    }
     "jfx-script": {
       "script-ref": "jfx/src/main/java/io/quarkiverse/mcp/servers/jfx/MCPServerJFX.java"
     },
