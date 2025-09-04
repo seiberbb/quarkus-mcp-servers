@@ -90,7 +90,7 @@ public class MCPServerJDBC {
     }
 
     @Tool(description = "List all tables in the jdbc database")
-    String list_tables(@ToolArg(description = "Use efficient table listing", defaultValue = "false") boolean efficient,
+    String list_tables(@ToolArg(description = "Use efficient table listing") boolean efficient,
             McpLog log) {
         log.debug("Listing tables");
         log.error("Listing tables");
