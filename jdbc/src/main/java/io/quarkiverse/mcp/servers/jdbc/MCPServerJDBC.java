@@ -90,23 +90,34 @@ public class MCPServerJDBC {
     }
 
     @Tool(description = "List all tables in the jdbc database")
-    String list_tables(McpLog log) {
+    String list_tables(@ToolArg(description = "Use efficient table listing", defaultValue = "false") boolean efficient,
+            McpLog log) {
         log.debug("Listing tables");
         log.error("Listing tables");
         try (Connection conn = getConnection()) {
+            String tableList = "";
             DatabaseMetaData metaData = conn.getMetaData();
             ResultSet rs = metaData.getTables(null, null, "%", new String[] { "TABLE" });
 
-            List<Map<String, String>> tables = new ArrayList<>();
-            while (rs.next()) {
-                Map<String, String> table = new HashMap<>();
-                table.put("TABLE_CAT", rs.getString("TABLE_CAT"));
-                table.put("TABLE_SCHEM", rs.getString("TABLE_SCHEM"));
-                table.put("TABLE_NAME", rs.getString("TABLE_NAME"));
-                table.put("REMARKS", rs.getString("REMARKS"));
-                tables.add(table);
+            if (efficient) {
+                ArrayList<String> tableNames = new ArrayList<>();
+                while (rs.next()) {
+                    tableNames.add(rs.getString("TABLE_SCHEM") + "." + rs.getString("TABLE_NAME"));
+                }
+                tableList = mapper.writeValueAsString(tableNames);
+            } else {
+                List<Map<String, String>> tables = new ArrayList<>();
+                while (rs.next()) {
+                    Map<String, String> table = new HashMap<>();
+                    table.put("TABLE_CAT", rs.getString("TABLE_CAT"));
+                    table.put("TABLE_SCHEM", rs.getString("TABLE_SCHEM"));
+                    table.put("TABLE_NAME", rs.getString("TABLE_NAME"));
+                    table.put("REMARKS", rs.getString("REMARKS"));
+                    tables.add(table);
+                }
+                tableList = mapper.writeValueAsString(tables);
             }
-            return mapper.writeValueAsString(tables);
+            return tableList;
         } catch (Exception e) {
             throw new ToolCallException("Failed to list tables: " + e.getMessage(), e);
         }
